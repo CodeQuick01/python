@@ -1,0 +1,49 @@
+import socket
+import requests
+
+# Function to perform a reverse DNS lookup and get the hostname
+def reverse_dns_lookup(ip_address):
+    try:
+        # Perform a reverse DNS lookup
+        hostname = socket.gethostbyaddr(ip_address)
+        return hostname[0]
+    except socket.herror:
+        return None
+
+# Function to get geolocation information from an IP address
+def get_ip_location(ip_address):
+    try:
+        # Use an external service to get geolocation (for example, ipinfo.io)
+        response = requests.get(f"https://ipinfo.io/{ip_address}/json")
+        data = response.json()
+
+        # Extract relevant information from the response
+        location_info = {
+            "IP": data.get("ip"),
+            "City": data.get("city"),
+            "Region": data.get("region"),
+            "Country": data.get("country"),
+            "Coordinates": data.get("loc"),
+            "Organization": data.get("org")
+        }
+        return location_info
+    except Exception as e:
+        return {"error": str(e)}
+
+# Example usage of the program
+if __name__ == "__main__":
+    # IP address to locate
+    ip_address = "47.162.101.50"  # Example with Google's DNS IP address
+
+    # Reverse DNS lookup to get the hostname
+    hostname = reverse_dns_lookup(ip_address)
+    if hostname:
+        print(f"Hostname for IP {ip_address}: {hostname}")
+    else:
+        print(f"No hostname found for IP {ip_address}")
+
+    # Get geolocation information for the IP address
+    location = get_ip_location(ip_address)
+    print("Location information:")
+    for key, value in location.items():
+        print(f"{key}: {value}")
